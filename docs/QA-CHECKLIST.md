@@ -5,6 +5,9 @@ Este checklist separa o que pode ser verificado na prévia web do que exige um c
 ## Prévia de interface (navegador)
 
 - [ ] Abrir `prototype/index.html` em tela 16:9.
+- [ ] Executar `npm test` localmente ou conferir o workflow Validate prototype no GitHub Actions.
+- [ ] Verificar a busca pelo botão na tela, além dos atalhos `/` e `F`.
+- [ ] Confirmar que o foco retorna ao controle que abriu o diálogo ao fechar a janela.
 - [ ] Conferir layout em 1080p e em resolução menor.
 - [ ] Navegar pelos cards com setas do teclado.
 - [ ] Conectar um controle compatível e verificar se o navegador/runtime expõe Gamepad API.
