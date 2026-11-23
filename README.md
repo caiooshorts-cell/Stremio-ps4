@@ -1,10 +1,10 @@
 # Stremio PS4
 
-Projeto experimental de um cliente de mídia com interface para TV e navegação pelo DualShock 4.
+Projeto experimental de um cliente de mídia com interface para TV e navegação planejada pelo DualShock 4.
 
 ## Objetivo
 
-Investigar uma implementação para PS4 Fat, Slim e Pro, com uma faixa inicial de compatibilidade pretendida entre os firmwares 13.00 e 14.02. Primeiro alvo de validação informado: PS4 no firmware 13.52. A faixa 13.00–14.02 é apenas uma meta futura, **não uma garantia de instalação ou execução**.
+Investigar uma implementação para PS4 Fat, Slim e Pro. O primeiro aparelho de referência informado para os testes é um **PS4 Fat com firmware 13.52**. A faixa 13.00–14.02 é uma meta futura, **não uma garantia de instalação ou execução**.
 
 ## Recursos planejados
 
@@ -16,7 +16,7 @@ Investigar uma implementação para PS4 Fat, Slim e Pro, com uma faixa inicial d
 
 ## Estado atual
 
-Este repositório acabou de ser criado e ainda não contém um aplicativo funcional nem um arquivo PKG. O primeiro passo é validar a arquitetura e as limitações do ambiente PS4 antes de escolher o empacotamento.
+O repositório contém uma prévia visual em `prototype/index.html`, com dados fictícios e navegação por teclado. Ela ainda não foi testada em um PS4 e não possui login real, sincronização de biblioteca, add-ons, reprodução de vídeo ou geração de PKG.
 
 ## Arquitetura em avaliação
 
