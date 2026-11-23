@@ -27,7 +27,7 @@ button,input{font:inherit}button{color:inherit;border:0;cursor:pointer}.shell{mi
   <nav class="nav" aria-label="Navegação principal">
     <button class="active" data-tab="Início">Início</button><button data-tab="Descobrir">Descobrir</button><button data-tab="Biblioteca">Minha biblioteca</button>
   </nav>
-  <div class="top-right"><span id="profileLabel">Modo demonstração</span><div class="avatar">S</div></div>
+  <div class="top-right"><button class="secondary" id="searchBtn" style="padding:9px 13px">Buscar&nbsp;⌕</button><span id="profileLabel">Modo demonstração</span><div class="avatar">S</div></div>
 </header>
 <main>
 <section class="hero" aria-label="Destaque">
@@ -54,20 +54,23 @@ const items=[
  {title:"Ponto de Encontro",genre:"Comédia",year:"2025",art:"linear-gradient(135deg,#3c2547,#b05d80 55%,#f2c26d)"}
 ];
 const catalog=document.getElementById('catalog'),overlay=document.getElementById('overlay'),body=document.getElementById('dialogBody');
+let lastFocus=null,currentTab='Início';
 function render(list=items){catalog.innerHTML='';list.forEach((item,i)=>{const b=document.createElement('button');b.className='card';b.innerHTML='<div class="poster" style="--art:'+item.art+'"><strong>'+item.title+'</strong></div><div class="meta"><span>'+item.genre+'</span><span class="tag">'+item.year+'</span></div>';b.setAttribute('aria-label',item.title+', '+item.genre);b.addEventListener('click',()=>details(item));catalog.appendChild(b)})}
-function show(title,html){document.getElementById('dialogTitle').textContent=title;body.innerHTML=html;overlay.classList.add('open');document.getElementById('closeDialog').focus()}
+function show(title,html){lastFocus=document.activeElement;document.getElementById('dialogTitle').textContent=title;body.innerHTML=html;overlay.classList.add('open');document.getElementById('closeDialog').focus()}
 function details(item){show(item.title,'<p>'+item.genre+' • '+item.year+'</p><p>Esta é uma ficha ilustrativa. A integração com metadados e fontes autorizadas será implementada após a validação do motor Stremio no ambiente de destino.</p><p class="small">A reprodução ainda não está disponível nesta prévia.</p>')}
 function search(){show('Buscar','<input class="search" id="searchInput" placeholder="Digite um título..." aria-label="Buscar título"><p class="small">A busca filtra apenas os títulos fictícios desta prévia.</p>');const input=document.getElementById('searchInput');input.addEventListener('input',()=>render(items.filter(x=>x.title.toLowerCase().includes(input.value.toLowerCase())||x.genre.toLowerCase().includes(input.value.toLowerCase()))));input.focus()}
 function login(){show('Conectar conta Stremio','<div class="empty"><strong>Vinculação ainda não habilitada</strong><p>Estamos verificando um fluxo oficial de autenticação por QR Code. Esta prévia não gera QR falso e não pede sua senha, e-mail ou token.</p><span class="small">Status: integração pendente de validação técnica.</span></div>')}
 document.getElementById('exploreBtn').onclick=()=>{document.getElementById('railTitle').textContent='Explorar catálogo';document.querySelector('.section-head').scrollIntoView({behavior:'smooth'})};
-document.getElementById('loginBtn').onclick=login;document.getElementById('closeDialog').onclick=()=>overlay.classList.remove('open');overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
-document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));document.getElementById('railTitle').textContent=btn.dataset.tab==='Início'?'Em destaque':btn.dataset.tab==='Biblioteca'?'Minha biblioteca (prévia)':'Explorar catálogo';render(btn.dataset.tab==='Biblioteca'?[]:items);if(btn.dataset.tab==='Biblioteca')catalog.innerHTML='<div class="empty" style="grid-column:1/-1">A biblioteca real aparecerá aqui depois da conexão segura com a conta.</div>'}));
+document.getElementById('loginBtn').onclick=login;function closeDialog(){overlay.classList.remove('open');if(lastFocus&&lastFocus.isConnected)lastFocus.focus()}
+document.getElementById('closeDialog').onclick=closeDialog;overlay.addEventListener('click',e=>{if(e.target===overlay)closeDialog()});
+document.getElementById('searchBtn').onclick=search;
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{currentTab=btn.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>{x.classList.toggle('active',x===btn);x.setAttribute('aria-current',x===btn?'page':'false')});document.getElementById('railTitle').textContent=currentTab==='Início'?'Em destaque':currentTab==='Biblioteca'?'Minha biblioteca (prévia)':'Explorar catálogo';if(currentTab==='Biblioteca')catalog.innerHTML='<div class="empty" style="grid-column:1/-1">A biblioteca real aparecerá aqui depois da conexão segura com a conta.</div>';else render(items);btn.focus()}));
 function visibleCards(){return [...document.querySelectorAll('.card')]}
 function moveFocus(delta){const cards=visibleCards();if(!cards.length)return;let i=cards.indexOf(document.activeElement);if(i<0)i=0;const next=Math.max(0,Math.min(cards.length-1,i+delta));cards[next].focus()}
 function activateFocused(){const el=document.activeElement;if(el&&typeof el.click==='function')el.click()}
-function backAction(){if(overlay.classList.contains('open'))overlay.classList.remove('open')}
+function backAction(){if(overlay.classList.contains('open'))closeDialog();else if(currentTab!=='Início')document.querySelector('[data-tab="Início"]')?.click()}
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape'||e.key==='Backspace'){backAction();return}
+ if(e.key==='Escape'||e.key==='Backspace'){e.preventDefault();backAction();return}
  if(e.key==='/'||e.key.toLowerCase()==='f'){e.preventDefault();search();return}
  if(overlay.classList.contains('open'))return;
  const cards=visibleCards();let i=cards.indexOf(document.activeElement);if(i<0)i=0;let next=i;
@@ -79,23 +82,25 @@ document.addEventListener('keydown',e=>{
  if((e.key==='Enter'||e.key===' ')&&document.activeElement.classList.contains('card')){e.preventDefault();activateFocused()}
 });
 // Gamepad API: funciona apenas em runtimes/navegadores que exponham o controle ao app.
-let lastPadAction=0;
+let lastPadAction=0,lastPadButtons=[];
 function pollGamepad(){
  const pads=navigator.getGamepads?navigator.getGamepads():[];
  const pad=[...pads].find(Boolean);
  if(pad){
   const now=performance.now();
   const pressed=(n)=>!!(pad.buttons[n]&&pad.buttons[n].pressed);
-  if(now-lastPadAction>180){
-   if(pressed(14)){moveFocus(-1);lastPadAction=now}
-   else if(pressed(15)){moveFocus(1);lastPadAction=now}
-   else if(pressed(13)){moveFocus(5);lastPadAction=now}
-   else if(pressed(12)){moveFocus(-5);lastPadAction=now}
-   else if(pressed(0)){activateFocused();lastPadAction=now}
-   else if(pressed(1)||pressed(8)){backAction();lastPadAction=now}
-   else if(pressed(4)){document.querySelector('[data-tab="Início"]')?.click();lastPadAction=now}
-   else if(pressed(5)){document.querySelector('[data-tab="Descobrir"]')?.click();lastPadAction=now}
+  const justPressed=(n)=>pressed(n)&&!lastPadButtons[n];
+  if(now-lastPadAction>150){
+   if(justPressed(14)||justPressed(12)){moveFocus(-1);lastPadAction=now}
+   else if(justPressed(15)){moveFocus(1);lastPadAction=now}
+   else if(justPressed(13)){moveFocus(5);lastPadAction=now}
+   else if(justPressed(0)){activateFocused();lastPadAction=now}
+   else if(justPressed(1)||justPressed(8)){backAction();lastPadAction=now}
+   else if(justPressed(4)){document.querySelector('[data-tab="Início"]')?.click();lastPadAction=now}
+   else if(justPressed(5)){document.querySelector('[data-tab="Descobrir"]')?.click();lastPadAction=now}
+   else if(justPressed(2)){search();lastPadAction=now}
   }
+  lastPadButtons=pad.buttons.map(b=>!!b.pressed);
  }
  requestAnimationFrame(pollGamepad);
 }
