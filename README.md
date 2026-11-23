@@ -16,7 +16,9 @@ Investigar uma implementação para PS4 Fat, Slim e Pro. O primeiro aparelho de 
 
 ## Estado atual
 
-O repositório contém uma prévia visual em `prototype/index.html`, com dados fictícios, navegação por teclado e suporte experimental à Gamepad API (se disponível no navegador/runtime). O controle DualShock 4 ainda não foi testado em um PS4. A prévia não possui login real, sincronização de biblioteca, add-ons, reprodução de vídeo ou geração de PKG.
+O repositório contém uma prévia visual em `prototype/index.html`, com dados fictícios, navegação por teclado e suporte experimental à Gamepad API (se disponível no navegador/runtime). A prévia inclui botão de busca, restauração de foco ao fechar diálogos, navegação vertical adaptada ao número de colunas da tela e leitura experimental da Gamepad API por eventos de pressionamento. O controle DualShock 4 ainda não foi testado em um PS4. A prévia não possui login real, sincronização de biblioteca, add-ons, reprodução de vídeo ou geração de PKG.
+
+Execute `npm test` para validar verificações estáticas e a sintaxe do JavaScript. O GitHub Actions executa essa validação em pushes e pull requests.
 
 ## Arquitetura em avaliação
 
