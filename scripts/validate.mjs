@@ -21,13 +21,13 @@ for (const [name, pattern] of checks) {
   if (!ok) failures++;
 }
 
-const scripts = [...html.matchAll(/<script type="module">([\\s\\S]*?)<\\/script>/gi)];
+const scripts = [...html.matchAll(/<script type="module">([\s\S]*?)<\/script>/gi)];
 if (scripts.length !== 1 || !html.includes('src="./stremio-addon-client.mjs"')) {
   console.error("FAIL expected one inline module and the Stremio client import");
   failures++;
 } else {
   try {
-    const inlineSource = scripts[0][1].replace(/^import .*;\\s*$/m, "");
+    const inlineSource = scripts[0][1].replace(/^import .*;\s*$/m, "");
     new Script(inlineSource, { filename: "prototype/index.html:inline-module" });
     console.log("PASS inline module JavaScript syntax");
   } catch (error) {
