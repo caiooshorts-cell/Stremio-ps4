@@ -21,7 +21,7 @@
 - [x] Criar prévia visual de interface de TV com navegação por teclado e suporte experimental à Gamepad API do navegador. Inclui busca acessível, retorno de foco dos diálogos e navegação vertical responsiva ao número de colunas. O mapeamento no DualShock 4 e a execução no PS4 ainda não foram testados. É uma demonstração com dados fictícios, sem login ou reprodução.
 - [x] Adicionar validação estática automatizada (`npm test`) e workflow do GitHub Actions para verificar a sintaxe do JavaScript e os principais avisos de segurança da prévia.
 - [ ] Validar autenticação e sincronização com métodos suportados pelo Stremio.
-- [ ] Integrar catálogos/add-ons confiáveis.
+- [x] Implementar cliente inicial do protocolo de add-ons para validar manifestos HTTPS e carregar metadados de catálogos; sem buscar streams. Testes automatizados com respostas simuladas aprovados. Ainda falta validar endpoints reais e compatibilidade no runtime do PS4.
 - [ ] Validar reprodução de conteúdo autorizado.
 - [ ] Automatizar build e empacotamento.
 - [ ] Testar separadamente em Fat, Slim e Pro e registrar firmware/runtime usados.
