@@ -16,7 +16,7 @@ Investigar uma implementação para PS4 Fat, Slim e Pro. O primeiro aparelho de 
 
 ## Estado atual
 
-O repositório contém uma prévia visual em `prototype/index.html`, com dados fictícios e navegação por teclado. Ela ainda não foi testada em um PS4 e não possui login real, sincronização de biblioteca, add-ons, reprodução de vídeo ou geração de PKG.
+O repositório contém uma prévia visual em `prototype/index.html`, com dados fictícios, navegação por teclado e suporte experimental à Gamepad API (se disponível no navegador/runtime). O controle DualShock 4 ainda não foi testado em um PS4. A prévia não possui login real, sincronização de biblioteca, add-ons, reprodução de vídeo ou geração de PKG.
 
 ## Arquitetura em avaliação
 
