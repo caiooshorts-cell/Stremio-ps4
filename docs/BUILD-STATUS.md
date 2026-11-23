@@ -6,6 +6,7 @@ Updated: 2026-11-23
 
 - A standalone HTML interface prototype in `prototype/index.html`.
 - Keyboard navigation and experimental Gamepad API input.
+- Stremio add-on protocol client integrated into the preview: HTTPS manifest validation and catalog metadata retrieval (no stream requests), with automated Node.js tests.
 - Demo-only catalogue data and a clearly disabled account-linking screen.
 - Static validation script (`npm test`) and a GitHub Actions workflow that runs it on pushes and pull requests.
 
@@ -13,7 +14,8 @@ Updated: 2026-11-23
 
 - A native PS4/Orbis application.
 - A verified Stremio QR-pairing flow.
-- Real account authentication, library sync, or add-on management.
+- Real account authentication or library sync.
+- Verified add-on compatibility against live third-party endpoints; the protocol client currently has mocked automated tests.
 - A video playback engine validated on PS4.
 - A reproducible PS4 PKG build pipeline or an installable PKG artifact.
 - Hardware test results for PS4 Fat 13.52, or for Slim/Pro.
