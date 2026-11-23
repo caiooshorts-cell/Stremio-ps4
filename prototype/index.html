@@ -122,8 +122,9 @@ function pollGamepad(){
   const pressed=(n)=>!!(pad.buttons[n]&&pad.buttons[n].pressed);
   const justPressed=(n)=>pressed(n)&&!lastPadButtons[n];
   if(now-lastPadAction>150){
-   if(justPressed(14)||justPressed(12)){moveFocus(-1);lastPadAction=now}
+   if(justPressed(14)){moveFocus(-1);lastPadAction=now}
    else if(justPressed(15)){moveFocus(1);lastPadAction=now}
+   else if(justPressed(12)){moveFocus(-columnCount());lastPadAction=now}
    else if(justPressed(13)){moveFocus(columnCount());lastPadAction=now}
    else if(justPressed(0)){activateFocused();lastPadAction=now}
    else if(justPressed(1)||justPressed(8)){backAction();lastPadAction=now}
