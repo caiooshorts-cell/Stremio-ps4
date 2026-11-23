@@ -1,0 +1,12 @@
+{
+  "name": "stremio-ps4-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "description": "TV-first Stremio-inspired interface prototype for compatibility research",
+  "scripts": {
+    "test": "node scripts/validate.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
