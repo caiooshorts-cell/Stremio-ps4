@@ -16,8 +16,8 @@
 
 ## 3. Etapas
 
-- [ ] Inspecionar o ambiente e as APIs/runtime disponíveis para o alvo.
-- [ ] Criar protótipo de interface de TV navegável por controle.
+- [ ] Inspecionar o ambiente e as APIs/runtime disponíveis para o alvo (bloqueador para decidir o empacotamento).
+- [x] Criar primeira prévia visual de interface de TV com navegação por teclado/controle compatível com mapeamento de teclas. Ainda é uma demonstração com dados fictícios, sem login ou reprodução.
 - [ ] Validar autenticação e sincronização com métodos suportados pelo Stremio.
 - [ ] Integrar catálogos/add-ons confiáveis.
 - [ ] Validar reprodução de conteúdo autorizado.
