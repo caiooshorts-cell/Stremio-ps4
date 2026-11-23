@@ -7,6 +7,9 @@ Este checklist separa o que pode ser verificado na prévia web do que exige um c
 - [ ] Abrir `prototype/index.html` em tela 16:9.
 - [ ] Conferir layout em 1080p e em resolução menor.
 - [ ] Navegar pelos cards com setas do teclado.
+- [ ] Conectar um controle compatível e verificar se o navegador/runtime expõe Gamepad API.
+- [ ] Testar direcional, X (selecionar), O/Options (voltar) e L1/R1 (atalhos de abas) via Gamepad API.
+- [ ] Confirmar o comportamento quando o controle é conectado/desconectado durante a execução.
 - [ ] Abrir detalhes com Enter/X e fechar com Escape/O.
 - [ ] Abrir busca com `/` ou `F` e filtrar títulos fictícios.
 - [ ] Alternar Início, Descobrir e Minha biblioteca.
