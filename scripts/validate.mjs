@@ -22,7 +22,7 @@ for (const [name, pattern] of checks) {
 }
 
 const scripts = [...html.matchAll(/<script type="module">([\s\S]*?)<\/script>/gi)];
-if (scripts.length !== 1 || !html.includes('src="./stremio-addon-client.mjs"')) {
+if (scripts.length !== 1 || !html.includes('from "./stremio-addon-client.mjs"')) {
   console.error("FAIL expected one inline module and the Stremio client import");
   failures++;
 } else {
