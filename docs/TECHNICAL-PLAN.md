@@ -18,7 +18,7 @@
 ## 3. Etapas
 
 - [ ] Validar o ambiente homebrew especificamente no PS4 Fat 13.52 e identificar APIs/runtime disponíveis (bloqueador para decidir o empacotamento).
-- [x] Criar primeira prévia visual de interface de TV com navegação por teclado. O mapeamento para DualShock 4 e a execução no PS4 ainda não foram testados. É uma demonstração com dados fictícios, sem login ou reprodução.
+- [x] Criar prévia visual de interface de TV com navegação por teclado e suporte experimental à Gamepad API do navegador. O mapeamento no DualShock 4 e a execução no PS4 ainda não foram testados. É uma demonstração com dados fictícios, sem login ou reprodução.
 - [ ] Validar autenticação e sincronização com métodos suportados pelo Stremio.
 - [ ] Integrar catálogos/add-ons confiáveis.
 - [ ] Validar reprodução de conteúdo autorizado.
