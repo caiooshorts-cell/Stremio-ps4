@@ -62,8 +62,47 @@ function login(){show('Conectar conta Stremio','<div class="empty"><strong>Vincu
 document.getElementById('exploreBtn').onclick=()=>{document.getElementById('railTitle').textContent='Explorar catálogo';document.querySelector('.section-head').scrollIntoView({behavior:'smooth'})};
 document.getElementById('loginBtn').onclick=login;document.getElementById('closeDialog').onclick=()=>overlay.classList.remove('open');overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));document.getElementById('railTitle').textContent=btn.dataset.tab==='Início'?'Em destaque':btn.dataset.tab==='Biblioteca'?'Minha biblioteca (prévia)':'Explorar catálogo';render(btn.dataset.tab==='Biblioteca'?[]:items);if(btn.dataset.tab==='Biblioteca')catalog.innerHTML='<div class="empty" style="grid-column:1/-1">A biblioteca real aparecerá aqui depois da conexão segura com a conta.</div>'}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'){overlay.classList.remove('open');return}if(e.key==='/'||e.key.toLowerCase()==='f'){e.preventDefault();search();return}if(overlay.classList.contains('open'))return;const cards=[...document.querySelectorAll('.card')];let i=cards.indexOf(document.activeElement);if(i<0)i=0;let next=i;if(e.key==='ArrowRight')next=Math.min(cards.length-1,i+1);if(e.key==='ArrowLeft')next=Math.max(0,i-1);if(e.key==='ArrowDown')next=Math.min(cards.length-1,i+5);if(e.key==='ArrowUp')next=Math.max(0,i-5);if(next!==i){e.preventDefault();cards[next]?.focus()}if(e.key==='Enter'&&document.activeElement.classList.contains('card'))document.activeElement.click()});
+function visibleCards(){return [...document.querySelectorAll('.card')]}
+function moveFocus(delta){const cards=visibleCards();if(!cards.length)return;let i=cards.indexOf(document.activeElement);if(i<0)i=0;const next=Math.max(0,Math.min(cards.length-1,i+delta));cards[next].focus()}
+function activateFocused(){const el=document.activeElement;if(el&&typeof el.click==='function')el.click()}
+function backAction(){if(overlay.classList.contains('open'))overlay.classList.remove('open')}
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'||e.key==='Backspace'){backAction();return}
+ if(e.key==='/'||e.key.toLowerCase()==='f'){e.preventDefault();search();return}
+ if(overlay.classList.contains('open'))return;
+ const cards=visibleCards();let i=cards.indexOf(document.activeElement);if(i<0)i=0;let next=i;
+ if(e.key==='ArrowRight')next=Math.min(cards.length-1,i+1);
+ if(e.key==='ArrowLeft')next=Math.max(0,i-1);
+ if(e.key==='ArrowDown')next=Math.min(cards.length-1,i+5);
+ if(e.key==='ArrowUp')next=Math.max(0,i-5);
+ if(next!==i){e.preventDefault();cards[next]?.focus()}
+ if((e.key==='Enter'||e.key===' ')&&document.activeElement.classList.contains('card')){e.preventDefault();activateFocused()}
+});
+// Gamepad API: funciona apenas em runtimes/navegadores que exponham o controle ao app.
+let lastPadAction=0;
+function pollGamepad(){
+ const pads=navigator.getGamepads?navigator.getGamepads():[];
+ const pad=[...pads].find(Boolean);
+ if(pad){
+  const now=performance.now();
+  const pressed=(n)=>!!(pad.buttons[n]&&pad.buttons[n].pressed);
+  if(now-lastPadAction>180){
+   if(pressed(14)){moveFocus(-1);lastPadAction=now}
+   else if(pressed(15)){moveFocus(1);lastPadAction=now}
+   else if(pressed(13)){moveFocus(5);lastPadAction=now}
+   else if(pressed(12)){moveFocus(-5);lastPadAction=now}
+   else if(pressed(0)){activateFocused();lastPadAction=now}
+   else if(pressed(1)||pressed(8)){backAction();lastPadAction=now}
+   else if(pressed(4)){document.querySelector('[data-tab="Início"]')?.click();lastPadAction=now}
+   else if(pressed(5)){document.querySelector('[data-tab="Descobrir"]')?.click();lastPadAction=now}
+  }
+ }
+ requestAnimationFrame(pollGamepad);
+}
+window.addEventListener('gamepadconnected',e=>{document.getElementById('profileLabel').textContent='Controle conectado'});
+window.addEventListener('gamepaddisconnected',()=>{document.getElementById('profileLabel').textContent='Modo demonstração'});
 render();
+requestAnimationFrame(pollGamepad);
 </script>
 </body>
 </html>
