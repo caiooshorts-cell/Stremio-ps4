@@ -66,6 +66,7 @@ document.getElementById('closeDialog').onclick=closeDialog;overlay.addEventListe
 document.getElementById('searchBtn').onclick=search;
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{currentTab=btn.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>{x.classList.toggle('active',x===btn);x.setAttribute('aria-current',x===btn?'page':'false')});document.getElementById('railTitle').textContent=currentTab==='Início'?'Em destaque':currentTab==='Biblioteca'?'Minha biblioteca (prévia)':'Explorar catálogo';if(currentTab==='Biblioteca')catalog.innerHTML='<div class="empty" style="grid-column:1/-1">A biblioteca real aparecerá aqui depois da conexão segura com a conta.</div>';else render(items);btn.focus()}));
 function visibleCards(){return [...document.querySelectorAll('.card')]}
+function columnCount(){const columns=getComputedStyle(catalog).gridTemplateColumns;return Math.max(1,columns.split(' ').filter(Boolean).length)}
 function moveFocus(delta){const cards=visibleCards();if(!cards.length)return;let i=cards.indexOf(document.activeElement);if(i<0)i=0;const next=Math.max(0,Math.min(cards.length-1,i+delta));cards[next].focus()}
 function activateFocused(){const el=document.activeElement;if(el&&typeof el.click==='function')el.click()}
 function backAction(){if(overlay.classList.contains('open'))closeDialog();else if(currentTab!=='Início')document.querySelector('[data-tab="Início"]')?.click()}
@@ -76,8 +77,8 @@ document.addEventListener('keydown',e=>{
  const cards=visibleCards();let i=cards.indexOf(document.activeElement);if(i<0)i=0;let next=i;
  if(e.key==='ArrowRight')next=Math.min(cards.length-1,i+1);
  if(e.key==='ArrowLeft')next=Math.max(0,i-1);
- if(e.key==='ArrowDown')next=Math.min(cards.length-1,i+5);
- if(e.key==='ArrowUp')next=Math.max(0,i-5);
+ if(e.key==='ArrowDown')next=Math.min(cards.length-1,i+columnCount());
+ if(e.key==='ArrowUp')next=Math.max(0,i-columnCount());
  if(next!==i){e.preventDefault();cards[next]?.focus()}
  if((e.key==='Enter'||e.key===' ')&&document.activeElement.classList.contains('card')){e.preventDefault();activateFocused()}
 });
@@ -93,7 +94,7 @@ function pollGamepad(){
   if(now-lastPadAction>150){
    if(justPressed(14)||justPressed(12)){moveFocus(-1);lastPadAction=now}
    else if(justPressed(15)){moveFocus(1);lastPadAction=now}
-   else if(justPressed(13)){moveFocus(5);lastPadAction=now}
+   else if(justPressed(13)){moveFocus(columnCount());lastPadAction=now}
    else if(justPressed(0)){activateFocused();lastPadAction=now}
    else if(justPressed(1)||justPressed(8)){backAction();lastPadAction=now}
    else if(justPressed(4)){document.querySelector('[data-tab="Início"]')?.click();lastPadAction=now}
