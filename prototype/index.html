@@ -27,7 +27,7 @@ button,input{font:inherit}button{color:inherit;border:0;cursor:pointer}.shell{mi
   <nav class="nav" aria-label="Navegação principal">
     <button class="active" data-tab="Início">Início</button><button data-tab="Descobrir">Descobrir</button><button data-tab="Biblioteca">Minha biblioteca</button>
   </nav>
-  <div class="top-right"><button class="secondary" id="searchBtn" style="padding:9px 13px">Buscar&nbsp;⌕</button><span id="profileLabel">Modo demonstração</span><div class="avatar">S</div></div>
+  <div class="top-right"><button class="secondary" id="searchBtn" style="padding:9px 13px">Buscar&nbsp;⌕</button><button class="secondary" id="addonBtn" style="padding:9px 13px">Adicionar catálogo</button><span id="profileLabel">Modo demonstração</span><div class="avatar">S</div></div>
 </header>
 <main>
 <section class="hero" aria-label="Destaque">
@@ -35,12 +35,13 @@ button,input{font:inherit}button{color:inherit;border:0;cursor:pointer}.shell{mi
 </section>
 <div class="section-head"><h2 id="railTitle">Em destaque</h2><span>Prévia visual • conteúdo ilustrativo</span></div>
 <section class="rail" id="catalog" aria-label="Catálogo de demonstração"></section>
-<div class="notice"><strong>Prévia de interface:</strong> os títulos e capas desta tela são fictícios. Login Stremio, catálogo real e reprodução ainda não estão conectados. Nenhuma senha ou token é solicitado ou armazenado.</div>
+<div class="notice"><strong>Prévia de interface:</strong> os títulos iniciais são fictícios. Catálogos de add-ons HTTPS podem ser consultados; login, sincronização da biblioteca e reprodução ainda não estão conectados. Nenhuma senha ou token é solicitado ou armazenado.</div>
 </main>
 <footer class="footer"><div>STREMIO PS4 • PROTÓTIPO DE INTERFACE</div><div class="keys"><span class="key"><b>↑ ↓ ← →</b> Navegar</span><span class="key"><b>✕ / Enter</b> Selecionar</span><span class="key"><b>○ / Esc</b> Voltar</span><span class="key"><b>□</b> Buscar</span></div></footer>
 </div>
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog"><div class="eyebrow">Stremio PS4</div><h2 id="dialogTitle">Conectar conta</h2><div id="dialogBody"></div><div class="dialog-actions"><button class="secondary" id="closeDialog">Fechar</button></div></div></div>
-<script>
+<script type="module">
+import { fetchAddonManifest, fetchAddonCatalog } from "./stremio-addon-client.mjs";
 const items=[
  {title:"Horizonte Zero",genre:"Ficção científica",year:"2026",art:"linear-gradient(135deg,#162b53,#5d3c89 55%,#e58a9b)"},
  {title:"Além das Estrelas",genre:"Aventura",year:"2025",art:"linear-gradient(135deg,#071d36,#126b86 55%,#9bd4d0)"},
@@ -54,16 +55,45 @@ const items=[
  {title:"Ponto de Encontro",genre:"Comédia",year:"2025",art:"linear-gradient(135deg,#3c2547,#b05d80 55%,#f2c26d)"}
 ];
 const catalog=document.getElementById('catalog'),overlay=document.getElementById('overlay'),body=document.getElementById('dialogBody');
+let addonItems=[];
 let lastFocus=null,currentTab='Início';
-function render(list=items){catalog.innerHTML='';list.forEach((item,i)=>{const b=document.createElement('button');b.className='card';b.innerHTML='<div class="poster" style="--art:'+item.art+'"><strong>'+item.title+'</strong></div><div class="meta"><span>'+item.genre+'</span><span class="tag">'+item.year+'</span></div>';b.setAttribute('aria-label',item.title+', '+item.genre);b.addEventListener('click',()=>details(item));catalog.appendChild(b)})}
+function render(list=items){catalog.replaceChildren();list.forEach((item)=>{const b=document.createElement('button');b.className='card';b.setAttribute('aria-label',item.title+', '+item.genre);const poster=document.createElement('div');poster.className='poster';poster.style.setProperty('--art',item.art||'linear-gradient(135deg,#28304a,#554080)');const title=document.createElement('strong');title.textContent=item.title;poster.appendChild(title);const meta=document.createElement('div');meta.className='meta';const genre=document.createElement('span');genre.textContent=item.genre||'Catálogo';const year=document.createElement('span');year.className='tag';year.textContent=item.year||'';meta.append(genre,year);b.append(poster,meta);b.addEventListener('click',()=>details(item));catalog.appendChild(b)})}
 function show(title,html){lastFocus=document.activeElement;document.getElementById('dialogTitle').textContent=title;body.innerHTML=html;overlay.classList.add('open');document.getElementById('closeDialog').focus()}
-function details(item){show(item.title,'<p>'+item.genre+' • '+item.year+'</p><p>Esta é uma ficha ilustrativa. A integração com metadados e fontes autorizadas será implementada após a validação do motor Stremio no ambiente de destino.</p><p class="small">A reprodução ainda não está disponível nesta prévia.</p>')}
+function details(item){show(item.title,'');const p=document.createElement('p');p.textContent=[item.genre,item.year].filter(Boolean).join(' • ');const note=document.createElement('p');note.textContent=item.source?'Metadados recebidos do catálogo Stremio selecionado.':'Esta é uma ficha ilustrativa.';const status=document.createElement('p');status.className='small';status.textContent='A reprodução ainda não está disponível nesta versão.';body.append(p,note,status)}
 function search(){show('Buscar','<input class="search" id="searchInput" placeholder="Digite um título..." aria-label="Buscar título"><p class="small">A busca filtra apenas os títulos fictícios desta prévia.</p>');const input=document.getElementById('searchInput');input.addEventListener('input',()=>render(items.filter(x=>x.title.toLowerCase().includes(input.value.toLowerCase())||x.genre.toLowerCase().includes(input.value.toLowerCase()))));input.focus()}
 function login(){show('Conectar conta Stremio','<div class="empty"><strong>Vinculação ainda não habilitada</strong><p>Estamos verificando um fluxo oficial de autenticação por QR Code. Esta prévia não gera QR falso e não pede sua senha, e-mail ou token.</p><span class="small">Status: integração pendente de validação técnica.</span></div>')}
+async function addAddon(){
+ show('Adicionar catálogo Stremio','<p>Informe o endereço HTTPS do manifest de um add-on confiável. Esta versão lê somente manifestos e metadados de catálogo; não acessa streams.</p><input class="search" id="addonUrl" inputmode="url" placeholder="https://exemplo.com/manifest.json" aria-label="Endereço HTTPS do manifest"><div class="dialog-actions"><button class="primary" id="loadAddon">Verificar add-on</button></div><p class="small" id="addonStatus">Não informe senhas, tokens ou links privados.</p>');
+ const input=document.getElementById('addonUrl'), action=document.getElementById('loadAddon'), status=document.getElementById('addonStatus');
+ action.addEventListener('click',async()=>{
+  action.disabled=true;status.textContent='Verificando manifest...';
+  try{
+   const result=await fetchAddonManifest(input.value);
+   show('Catálogos: '+result.manifest.name,'<p>Escolha um catálogo para carregar somente seus metadados.</p>');
+   result.manifest.catalogs.forEach((entry)=>{
+    const button=document.createElement('button');button.className='secondary';button.style.margin='6px';button.textContent=entry.name+' ('+entry.type+')';
+    button.addEventListener('click',async()=>{
+     button.disabled=true;button.textContent='Carregando...';
+     try{
+      const metas=await fetchAddonCatalog(result.manifestUrl,entry);
+      const palette=['linear-gradient(135deg,#172c50,#6550a0)','linear-gradient(135deg,#173b46,#368c91)','linear-gradient(135deg,#42233f,#a25d80)','linear-gradient(135deg,#273a29,#71834e)'];
+      addonItems=metas.map((meta,index)=>({title:meta.name,genre:meta.type,year:meta.releaseInfo||'',art:palette[index%palette.length],source:result.manifest.name,id:meta.id}));
+      document.getElementById('railTitle').textContent=result.manifest.name+' • '+entry.name;
+      render(addonItems);closeDialog();
+     }catch(error){button.disabled=false;button.textContent=entry.name;status.textContent='Não foi possível carregar: '+error.message}
+    });
+    body.appendChild(button);
+   });
+   if(!result.manifest.catalogs.length){const empty=document.createElement('p');empty.textContent='Este add-on não publicou catálogos.';body.appendChild(empty)}
+  }catch(error){status.textContent='Falha na validação: '+error.message;action.disabled=false}
+ });
+ input.focus();
+}
 document.getElementById('exploreBtn').onclick=()=>{document.getElementById('railTitle').textContent='Explorar catálogo';document.querySelector('.section-head').scrollIntoView({behavior:'smooth'})};
 document.getElementById('loginBtn').onclick=login;function closeDialog(){overlay.classList.remove('open');if(lastFocus&&lastFocus.isConnected)lastFocus.focus()}
 document.getElementById('closeDialog').onclick=closeDialog;overlay.addEventListener('click',e=>{if(e.target===overlay)closeDialog()});
 document.getElementById('searchBtn').onclick=search;
+document.getElementById('addonBtn').onclick=addAddon;
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{currentTab=btn.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>{x.classList.toggle('active',x===btn);x.setAttribute('aria-current',x===btn?'page':'false')});document.getElementById('railTitle').textContent=currentTab==='Início'?'Em destaque':currentTab==='Biblioteca'?'Minha biblioteca (prévia)':'Explorar catálogo';if(currentTab==='Biblioteca')catalog.innerHTML='<div class="empty" style="grid-column:1/-1">A biblioteca real aparecerá aqui depois da conexão segura com a conta.</div>';else render(items);btn.focus()}));
 function visibleCards(){return [...document.querySelectorAll('.card')]}
 function columnCount(){const columns=getComputedStyle(catalog).gridTemplateColumns;return Math.max(1,columns.split(' ').filter(Boolean).length)}
