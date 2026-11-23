@@ -3,7 +3,7 @@
 ## 1. Alvo
 
 - Modelos: PS4 Fat, Slim e Pro.
-- Firmware pretendido: 13.00–14.02.
+- Primeiro alvo de teste: PS4 no firmware 13.52 (informado pelo usuário). A faixa 13.00–14.02 continua sendo uma meta futura, não uma compatibilidade validada.
 - Controles: DualShock 4.
 - Saída: pacote instalável apenas após validar toolchain, runtime e ambiente homebrew compatíveis.
 
@@ -16,7 +16,7 @@
 
 ## 3. Etapas
 
-- [ ] Inspecionar o ambiente e as APIs/runtime disponíveis para o alvo (bloqueador para decidir o empacotamento).
+- [ ] Validar o ambiente homebrew especificamente no PS4 13.52 e identificar APIs/runtime disponíveis (bloqueador para decidir o empacotamento).
 - [x] Criar primeira prévia visual de interface de TV com navegação por teclado. O mapeamento para DualShock 4 e a execução no PS4 ainda não foram testados. Ainda é uma demonstração com dados fictícios, sem login ou reprodução.
 - [ ] Validar autenticação e sincronização com métodos suportados pelo Stremio.
 - [ ] Integrar catálogos/add-ons confiáveis.
