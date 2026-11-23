@@ -4,7 +4,7 @@ Projeto experimental de um cliente de mídia com interface para TV e navegação
 
 ## Objetivo
 
-Investigar uma implementação para PS4 Fat, Slim e Pro, com uma faixa inicial de compatibilidade pretendida entre os firmwares 13.00 e 14.02. Essa faixa é uma meta de desenvolvimento, **não uma garantia de desbloqueio, instalação ou execução**.
+Investigar uma implementação para PS4 Fat, Slim e Pro, com uma faixa inicial de compatibilidade pretendida entre os firmwares 13.00 e 14.02. Primeiro alvo de validação informado: PS4 no firmware 13.52. A faixa 13.00–14.02 é apenas uma meta futura, **não uma garantia de instalação ou execução**.
 
 ## Recursos planejados
 
